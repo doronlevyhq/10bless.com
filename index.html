@@ -350,23 +350,25 @@
   }
   .giving-list {
     width: 100%;
-    max-width: 620px;
-    display: flex;
-    flex-direction: column;
+    max-width: 920px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.5rem;
   }
   .giving-item {
-    padding: 2.25rem 0;
-    border-bottom: 1px solid var(--line);
+    border: 1px solid var(--line);
+    padding: 2.25rem 1.75rem;
+    min-height: 190px;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    justify-content: space-between;
+    gap: 1.25rem;
     opacity: 0;
     transform: translateY(18px);
     transition: opacity 900ms cubic-bezier(0.2, 0.8, 0.2, 1),
                 transform 900ms cubic-bezier(0.2, 0.8, 0.2, 1),
                 border-color var(--transition);
   }
-  .giving-item:last-child { border-bottom: none; }
   .giving-item.visible { opacity: 1; transform: translateY(0); }
   .giving-tag {
     font-family: 'Tenor Sans', sans-serif;
@@ -379,17 +381,18 @@
   .giving-desc {
     font-family: 'Cormorant Garamond', serif;
     font-weight: 400;
-    font-size: 1.4rem;
-    line-height: 1.55;
+    font-size: 1.25rem;
+    line-height: 1.5;
     color: var(--fg);
-    max-width: 560px;
     transition: color var(--transition);
   }
 
   @media (max-width: 640px) {
     .giving { padding: 5rem 1.5rem; gap: 2rem; }
     .giving-eyebrow { font-size: 0.6rem; letter-spacing: 0.25em; }
-    .giving-desc { font-size: 1.15rem; }
+    .giving-list { grid-template-columns: 1fr; gap: 1.25rem; }
+    .giving-item { min-height: unset; padding: 1.75rem 1.5rem; }
+    .giving-desc { font-size: 1.1rem; }
     .scroll-cue { bottom: 28px; font-size: 0.52rem; }
   }
 
@@ -439,6 +442,14 @@
       <div class="giving-item">
         <span class="giving-tag">2026 &middot; Family in Need</span>
         <p class="giving-desc">Supporting a mother living with a disability and her children in northern Israel.</p>
+      </div>
+      <div class="giving-item">
+        <span class="giving-tag">Stealth</span>
+        <p class="giving-desc">A new initiative currently underway. Details to follow.</p>
+      </div>
+      <div class="giving-item">
+        <span class="giving-tag">TBD</span>
+        <p class="giving-desc">More giving in progress &mdash; this list keeps growing.</p>
       </div>
     </div>
   </section>
