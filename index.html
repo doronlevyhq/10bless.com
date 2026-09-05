@@ -38,9 +38,8 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   html, body {
-    height: 100%;
     width: 100%;
-    overflow: hidden;
+    overflow-x: hidden;
   }
 
   body {
@@ -292,6 +291,108 @@
     .mark { width: 80px; height: 66px; }
   }
 
+  /* Scroll cue — invites the visitor down to Giving */
+  .scroll-cue {
+    position: fixed;
+    bottom: 44px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Tenor Sans', sans-serif;
+    font-size: 0.58rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 1200ms ease 2600ms, color var(--transition);
+  }
+  body.loaded .scroll-cue { opacity: 1; }
+  body.scrolled .scroll-cue { opacity: 0; pointer-events: none; transition: opacity 400ms ease; }
+  .scroll-cue::after {
+    content: '';
+    width: 1px;
+    height: 22px;
+    background: var(--fg-faint);
+    animation: scrollPulse 2.2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.25; transform: scaleY(0.55); }
+    50% { opacity: 1; transform: scaleY(1); }
+  }
+
+  /* Giving — a quiet record of where the 10% goes */
+  .giving {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+    padding: 7rem 2rem;
+  }
+  .giving-eyebrow {
+    font-family: 'Tenor Sans', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--fg-soft);
+    text-align: center;
+    transition: color var(--transition);
+  }
+  .giving-list {
+    width: 100%;
+    max-width: 620px;
+    display: flex;
+    flex-direction: column;
+  }
+  .giving-item {
+    padding: 2.25rem 0;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 900ms cubic-bezier(0.2, 0.8, 0.2, 1),
+                transform 900ms cubic-bezier(0.2, 0.8, 0.2, 1),
+                border-color var(--transition);
+  }
+  .giving-item:last-child { border-bottom: none; }
+  .giving-item.visible { opacity: 1; transform: translateY(0); }
+  .giving-tag {
+    font-family: 'Tenor Sans', sans-serif;
+    font-size: 0.66rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fg-soft);
+    transition: color var(--transition);
+  }
+  .giving-desc {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 1.4rem;
+    line-height: 1.55;
+    color: var(--fg);
+    max-width: 560px;
+    transition: color var(--transition);
+  }
+
+  @media (max-width: 640px) {
+    .giving { padding: 5rem 1.5rem; gap: 2rem; }
+    .giving-eyebrow { font-size: 0.6rem; letter-spacing: 0.25em; }
+    .giving-desc { font-size: 1.15rem; }
+    .scroll-cue { bottom: 28px; font-size: 0.52rem; }
+  }
+
   /* Respect reduced motion */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
@@ -330,6 +431,18 @@
     </div>
   </main>
 
+  <button class="scroll-cue" id="scrollCue" aria-label="Scroll to Giving">Giving</button>
+
+  <section class="giving" id="giving">
+    <span class="giving-eyebrow">Giving</span>
+    <div class="giving-list">
+      <div class="giving-item">
+        <span class="giving-tag">2026 &middot; Family in Need</span>
+        <p class="giving-desc">Supporting a mother living with a disability and her children in northern Israel.</p>
+      </div>
+    </div>
+  </section>
+
   <button class="toggle" aria-label="Toggle theme" id="themeToggle"></button>
 
 <script>
@@ -352,6 +465,28 @@
   document.addEventListener('keydown', (e) => {
     if (e.key === 't' || e.key === 'T') toggle.click();
   });
+
+  // Scroll cue: click to jump to Giving, fade once the page is scrolled
+  const scrollCue = document.getElementById('scrollCue');
+  const givingSection = document.getElementById('giving');
+  scrollCue.addEventListener('click', () => {
+    givingSection.scrollIntoView({ behavior: 'smooth' });
+  });
+  window.addEventListener('scroll', () => {
+    document.body.classList.toggle('scrolled', window.scrollY > 80);
+  }, { passive: true });
+
+  // Reveal Giving entries as they enter the viewport
+  const givingItems = document.querySelectorAll('.giving-item');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  givingItems.forEach((item) => observer.observe(item));
 </script>
 
 </body>
